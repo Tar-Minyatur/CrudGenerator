@@ -13,3 +13,16 @@ Planned Features
 - Default template engine (Twig) can be replaced with any other solution
 - Default database engine (PDO) can be replaced with any other solution
 - Regenerating the scaffolding doesn't overwrite manual changes
+- Different ways to import the model (from an existing database, from a config file, from existing entities...)
+
+Usage
+-----
+
+1. Copy `generator/config.example.json` to `generator/config.json` and edit the settings in there.
+2. Install the required dependencies via composer:
+
+         $ composer install
+
+3. Start the generator:
+
+         $ php generator/generator.php
