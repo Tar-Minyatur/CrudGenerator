@@ -1,5 +1,9 @@
 {
     "pdo_dsn": "mysql:host=localhost;dbname=crud_test",
     "pdo_user": "root",
-    "pdo_password": ""
+    "pdo_password": "",
+
+    "appBaseDir": "../",
+    "appDir": "App",
+    "appNamespace": "App"
 }

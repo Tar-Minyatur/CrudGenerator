@@ -12,7 +12,8 @@ class Config {
     private $settings;
 
     private $defaults = array(
-        'appBaseDir' => '../App',
+        'appBaseDir' => '../',
+        'appDir' => 'App',
         'appNamespace' => 'App'
     );
 

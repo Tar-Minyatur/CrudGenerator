@@ -60,12 +60,36 @@ class Generator {
             'debug' => true
         ));
 
+        $this->setupApplication($twig);
         $this->generateEntities($model, $twig);
         $this->generateControllers($model, $twig);
         $this->generateViews($model, $twig);
 
         $durationInSeconds = round((microtime() - $startTime / 1000), 2);
         echo "\nFinished code generation after " . $durationInSeconds . "s\n";
+        echo "Application has been created in " . $this->config->appBaseDir . $this->config->appDir . "\n\n";
+        echo "Running Composer...\n";
+        system('cd ' . $this->config->appBaseDir . $this->config->appDir . ' && composer install');
+    }
+
+    private function setupApplication(\Twig_Environment $twig) {
+        if (!file_exists($this->config->appBaseDir)) {
+            Analog::debug("Creating application directory: " . $this->config->appBaseDir);
+            mkdir($this->config->appBaseDir, 0777, true);
+        }
+
+        $fileName = $this->config->appBaseDir . $this->config->appDir . '/composer.json';
+        $variables = array(
+            'namespace' => $this->config->appNamespace
+        );
+
+        if (!file_exists($fileName)) {
+            Analog::debug("Generator - Creating composer.json");
+            $template = $twig->loadTemplate("json/composer.twig");
+            file_put_contents($fileName, $template->render($variables));
+        } else {
+            Analog::debug("Generator - Skipping composer.json because it already exists");
+        }
     }
 
     private function analyzeModel() {
