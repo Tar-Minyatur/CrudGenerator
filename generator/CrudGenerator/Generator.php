@@ -2,6 +2,7 @@
 namespace TSHW\CrudGenerator;
 
 use Analog\Analog;
+use Analog\Handler\File;
 use Analog\Handler\Stderr;
 use TSHW\CrudGenerator\Analyzer\Database\PDOModelAnalyzer;
 use TSHW\CrudGenerator\Analyzer\ModelAnalyzer;
@@ -23,7 +24,10 @@ class Generator {
 
     function __construct() {
         set_error_handler(array("\TSHW\CrudGenerator\Generator", "handlePHPError"));
-        Analog::handler(Stderr::init());
+        if (!file_exists("logs")) {
+            mkdir("logs");
+        }
+        Analog::handler(File::init(sprintf("logs/generate-%s.log", date('Y-m-d_H-i'))));
         return true;
     }
 
@@ -36,11 +40,17 @@ class Generator {
         }
 
         printf("TSHW PHP CRUD Generator - Version %s\n", self::VERSION);
-        print "Created by Till Helge Helwig <thh@tshw.de>\n";
+        print "Created by Till Helge Helwig <thh@tshw.de>\n\n";
 
         $this->config = new Config();
         // TODO Make the config source more flexible
         $this->config->read("config.json");
+
+        $this->generateCode();
+    }
+
+    public function generateCode() {
+        $startTime = microtime();
 
         $model = $this->analyzeModel();
 
@@ -53,6 +63,9 @@ class Generator {
         $this->generateEntities($model, $twig);
         $this->generateControllers($model, $twig);
         $this->generateViews($model, $twig);
+
+        $durationInSeconds = round((microtime() - $startTime / 1000), 2);
+        echo "\nFinished code generation after " . $durationInSeconds . "s\n";
     }
 
     private function analyzeModel() {

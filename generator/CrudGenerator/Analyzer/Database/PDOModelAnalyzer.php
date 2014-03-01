@@ -25,6 +25,7 @@ class PDOModelAnalyzer implements ModelAnalyzer {
 
         try {
             Analog::debug("PDOModelAnalyzer - Initializing database connection");
+            echo "Analyzing database...\n";
             $model = new ModelDescription();
             $db = new \PDO($config->pdo_dsn, $config->pdo_user, $config->user_password);
             $db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
@@ -62,6 +63,7 @@ class PDOModelAnalyzer implements ModelAnalyzer {
             $entities[$entityName] = new EntityDescription($entityName, $tableName);
         }
         Analog::debug("PDOModelAnalyzer - Found " . $stmt->rowCount() . " table(s), skipped " . count($skippedTables) . " of them");
+        echo "Found " . sizeof($entities) . (sizeof($entities) == 1 ? ' entity' : ' entities') . " in the database\n";
         return $entities;
     }
 
@@ -84,6 +86,7 @@ class PDOModelAnalyzer implements ModelAnalyzer {
      * @param String[] $remainingTables
      */
     private function detectAssociations(\PDO $db, array $entities, array $remainingTables) {
+        $associationCount = 0;
 
         // find references in entites
         $fkeys = array();
@@ -110,13 +113,20 @@ class PDOModelAnalyzer implements ModelAnalyzer {
                     }
                     $association = new EntityAssociationDescription($type, $foreignEntity, $field);
                     $entity->addAssociation($association);
+                    $associationCount++;
                     Analog::debug("Detected association between '" . $entity->getName() . "' and '" . $foreignEntity->getName() . "'");
                     break;
                 }
             }
 
         }
+        if ($associationCount == 1) {
+            echo "Detected 1 one-to-one or one-to-many association between entities\n";
+        } else {
+            echo "Detected " . $associationCount . " one-to-one and one-to-many associations between entities\n";
+        }
 
+        $associationCount = 0;
         // analyze remaining tables
         foreach ($remainingTables as $table) {
             $participants = explode('_to_', $table);
@@ -130,8 +140,10 @@ class PDOModelAnalyzer implements ModelAnalyzer {
                 $association->setMappingTable($table);
                 $entities[$entity1]->addAssociation($association);
                 Analog::debug("Detected many-to-many association between '" . $entity1 . "' and '" . $entity2 . "'");
+                $associationCount++;
             }
         }
+        echo "Detected " . $associationCount . " many-to-many " . ($associationCount == 1 ? "association" : "associations") . "\n";
     }
 
     /**
