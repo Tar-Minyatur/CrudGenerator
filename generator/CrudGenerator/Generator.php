@@ -5,6 +5,8 @@ use Analog\Analog;
 use Analog\Handler\Stderr;
 use TSHW\CrudGenerator\Analyzer\Database\PDOModelAnalyzer;
 use TSHW\CrudGenerator\Analyzer\ModelAnalyzer;
+use TSHW\CrudGenerator\Model\ModelDescription;
+use TSHW\CrudGenerator\Renderer\PDO\PDOEntityRenderer;
 
 class Generator {
 
@@ -42,9 +44,15 @@ class Generator {
 
         $model = $this->analyzeModel();
 
-        $this->generateEntities($model);
-        $this->generateControllers($model);
-        $this->generateViews($model);
+        $twigLoader = new \Twig_Loader_Filesystem("templates/");
+        $twig = new \Twig_Environment($twigLoader, array(
+            'cache' => 'templates/twig_cache/',
+            'debug' => true
+        ));
+
+        $this->generateEntities($model, $twig);
+        $this->generateControllers($model, $twig);
+        $this->generateViews($model, $twig);
     }
 
     private function analyzeModel() {
@@ -55,17 +63,19 @@ class Generator {
         return $model;
     }
 
-    private function generateEntities($model) {
+    private function generateEntities(ModelDescription $model, \Twig_Environment $twig) {
         Analog::debug("Generator - Generating entities");
-        // TODO Implement
+        // TODO Allow renderer override via config
+        $renderer = new PDOEntityRenderer();
+        $renderer->renderEntities($model, $twig, $this->config);
     }
 
-    private function generateControllers($model) {
+    private function generateControllers(ModelDescription $model, \Twig_Environment $twig) {
         Analog::debug("Generator - Generating controllers");
         // TODO Implement
     }
 
-    private function generateViews($model) {
+    private function generateViews(ModelDescription $model, \Twig_Environment $twig) {
         Analog::debug("Generator - Generating views");
         // TODO Implement
     }

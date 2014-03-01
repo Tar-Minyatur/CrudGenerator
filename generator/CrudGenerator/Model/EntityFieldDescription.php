@@ -33,7 +33,7 @@ class EntityFieldDescription {
     /**
      * @return boolean
      */
-    public function getEditable() {
+    public function isEditable() {
         return $this->editable;
     }
 
