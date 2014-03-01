@@ -38,9 +38,13 @@ class PDOEntityRenderer implements EntityRenderer {
             );
             $fileName = $modelDir . $entity->getName() . ".php";
 
-            Analog::debug("PDOEntityRenderer - Writing entity override object '" . $entity->getName() . "' to file: " . $fileName);
-            $template = $twig->loadTemplate("php/entity_stub.twig");
-            file_put_contents($fileName, $template->render($variables));
+            if (!file_exists($fileName)) {
+                Analog::debug("PDOEntityRenderer - Writing entity override object '" . $entity->getName() . "' to file: " . $fileName);
+                $template = $twig->loadTemplate("php/entity_stub.twig");
+                file_put_contents($fileName, $template->render($variables));
+            } else {
+                Analog::debug("PDOEntityRenderer - Not writing entity override object '" . $entity->getName() . "', because file exists: " . $fileName);
+            }
             echo "Created entity '" . $entity->getName() . "'\n";
         }
 
