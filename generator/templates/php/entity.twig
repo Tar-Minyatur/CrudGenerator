@@ -1,0 +1,24 @@
+{% include "php/_head.twig" %}
+
+namespace {{ namespace }};
+
+class {{ entity.name }} {
+    {% for field in entity.fields %}
+
+    /**
+     * @var {{ field.type }}
+     */
+    private ${{ field.name }};
+    {%  endfor %}
+    {% for field in entity.fields %}
+
+    public function get{{ field.name|capitalize }}() {
+        return $this->{{ field.name }};
+    }
+
+    public function set{{ field.name|capitalize }}(${{ field.name }}) {
+        $this->{{ field.name }} = ${{ field.name }};
+    }
+    {% endfor %}
+
+}

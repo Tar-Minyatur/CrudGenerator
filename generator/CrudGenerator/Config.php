@@ -11,9 +11,16 @@ class Config {
      */
     private $settings;
 
+    private $defaults = array(
+        'appBaseDir' => '../App',
+        'appNamespace' => 'App'
+    );
+
     public function __get($name) {
         if (isset($this->settings[$name])) {
             return $this->settings[$name];
+        } else if (isset($this->defaults[$name])) {
+            return $this->defaults[$name];
         } else {
             return null;
         }
@@ -24,7 +31,7 @@ class Config {
     }
 
     public function __isset($name) {
-        return isset($this->settings[$name]);
+        return isset($this->settings[$name]) || isset($this->defaults[$name]);
     }
 
     public function read($filePath) {
