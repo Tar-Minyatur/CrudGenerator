@@ -1,0 +1,13 @@
+{
+    "require": {
+        "twig/twig2": "1.6.*",
+        "php": ">=5.3",
+        "analog/analog": "1.0.4-stable"
+    },
+
+    "autoload": {
+        "psr-4": {
+            "TSHW\\": "generator/"
+        }
+    }
+}
